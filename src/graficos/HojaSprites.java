@@ -26,4 +26,9 @@ public class HojaSprites {
             e.printStackTrace();
         }
     }
+
+    public int getAncho(){
+        return ancho;
+    }
+
 }
