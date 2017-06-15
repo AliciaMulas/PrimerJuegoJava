@@ -1,5 +1,7 @@
 package juego;
 
+import control.Teclado;
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -22,9 +24,15 @@ public class Juego extends Canvas implements Runnable {
     private static volatile boolean enFuncionamiento = false;
     //Hilo
     private static Thread hilo;
+    //clase teclado
+    private static Teclado teclado;
 
     private Juego() {
         setPreferredSize(new Dimension(ANCHO, ALTO));
+
+        teclado = new Teclado();
+        addKeyListener(teclado); //Detectar todas las teclas que se pulsen en el canvas
+
         ventana = new JFrame(NOMBRE);
         ventana.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         ventana.setResizable(false);
@@ -59,6 +67,21 @@ public class Juego extends Canvas implements Runnable {
      * Metodo para actualizar las variables del juego, vida etc
      */
     private void actualizar() {
+        teclado.actualizar();
+
+        if(teclado.arriba){
+            System.out.println("Arriba");
+        }
+        if(teclado.abajo){
+            System.out.println("Abajo");
+        }
+        if(teclado.derecha){
+            System.out.println("Derecha");
+        }
+        if(teclado.izquierda){
+            System.out.println("Izquierda");
+        }
+
         aps++;
     }
 
@@ -83,6 +106,9 @@ public class Juego extends Canvas implements Runnable {
 
         double tiempoTranscurrido;
         double delta = 0; //delta es la cantidad de tiempo que pasa hasta que se hace una actualizacion
+
+        //Coger el foco
+        requestFocus();
 
         while (enFuncionamiento) {
             final long inicioBucle = System.nanoTime();
