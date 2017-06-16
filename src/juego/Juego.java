@@ -1,9 +1,13 @@
 package juego;
 
 import control.Teclado;
+import graficos.Pantalla;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.image.BufferStrategy;
+import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferInt;
 
 /**
  * Created by Alicia on 04/06/2017.
@@ -18,6 +22,9 @@ public class Juego extends Canvas implements Runnable {
     private static int aps = 0;
     private static int fps = 0;
 
+    private static int x = 0;
+    private static int y = 0;
+
     private static JFrame ventana;
 
     //Volalite para que no se pueda ejecutar en 2 hilos a la vez
@@ -26,9 +33,16 @@ public class Juego extends Canvas implements Runnable {
     private static Thread hilo;
     //clase teclado
     private static Teclado teclado;
+    private static Pantalla pantalla;
+
+    //objetos para los pixeles
+    private static BufferedImage imagen = new BufferedImage(ANCHO, ALTO, BufferedImage.TYPE_INT_RGB);
+    private static int[] pixeles = ((DataBufferInt) imagen.getRaster().getDataBuffer()).getData();
 
     private Juego() {
         setPreferredSize(new Dimension(ANCHO, ALTO));
+
+        pantalla = new Pantalla(ANCHO, ALTO);
 
         teclado = new Teclado();
         addKeyListener(teclado); //Detectar todas las teclas que se pulsen en el canvas
@@ -70,16 +84,16 @@ public class Juego extends Canvas implements Runnable {
         teclado.actualizar();
 
         if(teclado.arriba){
-            System.out.println("Arriba");
+           y++;
         }
         if(teclado.abajo){
-            System.out.println("Abajo");
+          y--;
         }
         if(teclado.derecha){
-            System.out.println("Derecha");
+           x--;
         }
         if(teclado.izquierda){
-            System.out.println("Izquierda");
+            x++;
         }
 
         aps++;
@@ -89,6 +103,25 @@ public class Juego extends Canvas implements Runnable {
      * Metodo para dibujar los graficos
      */
     private void mostrar() {
+        BufferStrategy estrategia = getBufferStrategy();
+
+        if(estrategia == null){
+            createBufferStrategy(3);
+            return;
+        }
+        pantalla.limpiar();
+        pantalla.mostrar(x, y);
+
+        //copiar un array
+        System.arraycopy(pantalla.pixeles, 0, pixeles, 0, pixeles.length);
+
+        Graphics graficos = estrategia.getDrawGraphics();
+
+        graficos.drawImage(imagen, 0, 0, getWidth(), getHeight(), null);
+        graficos.dispose();
+
+        estrategia.show();
+
         fps++;
     }
 
